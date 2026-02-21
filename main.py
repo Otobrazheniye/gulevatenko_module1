@@ -23,16 +23,17 @@ def create_file(file_name: str) -> None:
         f.write("success add\n")
 
 # 1)A
-
-#input:  {task_priority: _, status: _} {comment:_}
-# validation
-# create string
-# f.write(line)
-
-# Task priority Name status comment ID(More->Details ) 
-def add_to_file(file_name:str,report_name):
+def add_to_file_input():
     task_priority = int(input("Please choose correct task priority: \n 1] High \n 2] Medium \n 3] Low \n\t").strip())
+    status = int(input("This task in progress? \n 1] No \n 2] Yes \n").strip())
+    return task_priority, status
 
+def add_to_file_input_comm():
+    comment = input("Please add comment about this task: \n\t")
+    return comment
+
+def add_to_file_validation(task_priority:int, status:int):
+       
     match task_priority:
         case 1:
             task_priority = "High"
@@ -41,28 +42,35 @@ def add_to_file(file_name:str,report_name):
         case 3:
             task_priority = "Low"
         case _ :
-            return print("Wrong input priority")
-        
-    status = int(input("This task in progress? \n 1] No \n 2] Yes \n").strip())
+            raise ValueError("Wrong input priority")
+
+
     if status == 1: 
         status = "New"
     elif status == 2:
         status = "In progress"
     else: 
-        return print("Wrong information")
+        raise ValueError("Wrong status")
+    return task_priority,status
 
-    comment = input("Please add comment about this task: \n\t")
-
-  
+def add_to_file_create_str(task_priority:str, report_name, status:str, comment):
+    report_line = (
+        f"Task priority: {task_priority}\t\t"
+        f"Report Name: {report_name.strip()}\t\t"
+        f"Status: {status}\t\t"
+        f"Comment: {comment}\n"
+        "\n"
+    )
+    return report_line
+    
+# Task priority Name status comment ID(More->Details ) 
+def add_to_file(file_name, report_line):
     with open(file_name, "a", encoding="utf-8") as f:
-        line = (
-            f"Task priority: {task_priority}\t"
-            f"Report Name: {report_name.strip()}\t"
-            f"Status: {status}\t"
-            f"Comment: {comment}\n"
-            "-----\n"
-        )
-        f.write(line)
+        f.write(report_line)
+
+
+
+
 # 2)R
 def read_file(file_name: str) -> str:
     with open(file_name, "r", encoding="utf-8") as f:
@@ -105,8 +113,6 @@ def update_file(file_name: str) -> None:
         print("Updated successfully")
     else:
         print("Report not found")
-
-
 # 4)D
 def delete_file(file_name: str) -> None:
     with open(file_name, "r", encoding="utf-8") as f:
@@ -126,7 +132,11 @@ def action_pre_start(user_choose:int):
     match user_choose:
         case 1:
             report_name = input("Please enter ->Report Name<-:\n").strip().lower()
-            add_to_file("protocol.txt",report_name)
+            task_priority, status = add_to_file_input()
+            comment = add_to_file_input_comm()
+            task_priority, status = add_to_file_validation(task_priority,status)
+            line = add_to_file_create_str(task_priority, report_name, status, comment)
+            add_to_file("protocol.txt", line)
         case 2:
             read_file("protocol.txt")
             
