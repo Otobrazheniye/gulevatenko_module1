@@ -72,27 +72,32 @@ def add_to_file(file_name, report_line):
 
 
 # 2)R
-def read_file(file_name: str) -> str:
+def read_file_clasic(file_name):
     with open(file_name, "r", encoding="utf-8") as f:
         lines = f.readlines()
+        print("".join(lines))
+    return lines
 
-    print("".join(lines))
+def read_file(file_name: str) -> str:
+    read_file_clasic(file_name)
+    
 
-    report_name = input("Please enter ->Report Name<-:\n").strip().lower()
+    # report_name = input("Please enter ->Report Name<-:\n").strip().lower()
 
-    if report_name + "\n" in lines or report_name in [ln.strip() for ln in lines]:
-        print("found")
-    else:
-        print("not found")
+    # if report_name + "\n" in lines or report_name in [ln.strip() for ln in lines]:
+    #     print("found")
+    # else:
+    #     print("not found")
 
-    return "".join(lines)
+    # return "".join(lines)
+    return
+
 
 # 3)U
+
+
 def update_file(file_name: str) -> None:
-    with open(file_name, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    
-    print("".join(lines))
+    lines = read_file_clasic(file_name)
 
     report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
     new_value = input("Enter new value:\n").strip()
@@ -148,13 +153,41 @@ def action_pre_start(user_choose:int):
         case _:
             print("Enter again, uncorrect vatiant")
 
+def file_to_dict(line):
+    result = {}
+    parts = line.strip().split("\t")
 
+    for part in parts:
+        if ":" in part:
+            key,value = part.split(":",1)
+            result[key.strip()] = value.strip()
+    return result
+
+
+
+def dict_to_list(file_name):
+    result = []
+
+    with open(file_name, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                result.append(file_to_dict(line))
+    return result 
 
 
 # main
 menu_process = True
 while menu_process:
+    # result = parse_file("protocol.txt")
+    # print(result)
+
+    res_dict = dict_to_list("protocol.txt")
+    print(res_dict)
+
     user_choose = int(input("Please choose action: \n1] Create \t 2] Read \n3]Update \t 4] Delete \n"))
     action_pre_start(user_choose)
+
+
+
     
 
