@@ -83,13 +83,37 @@ def read_file(file_name: str) -> str:
 
 
 # 3)U
+def update_file_input(file_name:str, user_choose):
+
+# if / match
+    report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
+    name_value = input("Enter new value:\n").strip()
+    
+    task_priority = input("Please enter ->Task Priority<- for update:\n").strip().lower()
+    task_value = input("Enter new value:\n").strip()
+
+    status = input("Please enter ->Status<- for update:\n").strip().lower()
+    status_value = input("Enter new value:\n").strip()
+
+    comment = input("Please enter ->Status<- for update:\n").strip().lower()
+    comment_value = input("Enter new value:\n").strip()
+
+
 
 
 def update_file(file_name: str) -> None:
-    file_dict = dict_to_list(file_name)    
+    file_dict = file_dict_interface(file_name)    
      
     report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
-    new_value = input("Enter new value:\n").strip()
+    
+    for sorted_name in file_dict:
+        if sorted_name["Report Name"] == report_name:
+            print(sorted_name)
+        else:
+            return print("Not found")
+    user_choose = input("What you want change?")
+    
+# +2 def
 
     updated_lines = []
     found = False
