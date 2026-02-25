@@ -23,16 +23,19 @@ def create_file(file_name: str) -> None:
         f.write("success add\n")
 
 # 1)A
-def add_to_file_input():
+def add_to_file_input_taskp():
     task_priority = int(input("Please choose correct task priority: \n 1] High \n 2] Medium \n 3] Low \n\t").strip())
-    status = int(input("This task in progress? \n 1] No \n 2] Yes \n").strip())
-    return task_priority, status
+    return task_priority
+
+def add_to_file_input_status():
+    status = int(input("This task in progress? \n 1] New task \n 2] In progress \n 3] Finished").strip())
+    return status
 
 def add_to_file_input_comm():
     comment = input("Please add comment about this task: \n\t")
     return comment
 
-def add_to_file_validation(task_priority:int, status:int):
+def add_to_file_validation_taskp(task_priority:int):
        
     match task_priority:
         case 1:
@@ -43,15 +46,21 @@ def add_to_file_validation(task_priority:int, status:int):
             task_priority = "Low"
         case _ :
             raise ValueError("Wrong input priority")
+    return task_priority
 
 
+def add_to_file_validation_status(status:int):
     if status == 1: 
         status = "New"
     elif status == 2:
         status = "In progress"
+    elif status == 3:
+        status = "Finished"
     else: 
         raise ValueError("Wrong status")
-    return task_priority,status
+    return status
+
+
 
 def add_to_file_create_str(task_priority:str, report_name, status:str, comment):
     report_line = (
@@ -91,21 +100,27 @@ def update_file_input():
     comment_value = None
     bchange_procces = True
 
-    while bchange_procces:
-        user_choose = int(input("What are you want update/change? \n 1]Task Priority \n2]Status \n3]Report Name \n4]Comment \n\t5]Change several options  \n\n\t0]Finish"))
+    # while bchange_procces:
+    while True:
+        user_choose = int(input("What are you want update/change? \n 1]Task Priority \n2]Status \n 3]Report Name \n4]Comment \n\t0]Finish"))
         match user_choose:
             case 1:
-                task_value = input("Enter new value:\n").strip()
+                task_value = add_to_file_input_taskp()
+                task_value = add_to_file_validation_taskp(task_value)
             case 2:
-                status_value = input("Enter new value:\n").strip()
+                status_value = add_to_file_input_status()
+                status_value = add_to_file_validation_status(status_value)
             case 3:
                 name_value = input("Enter new value:\n").strip()
             case 4:
-                comment_value = input("Enter new value:\n").strip()
+                comment_value = add_to_file_input_comm()
+            case 0:
+                break
             case _:
-                print("Change is finished")
-                bchange_procces = False
-        return task_value,status_value,name_value,comment_value
+                print("Wrong choise")
+                # print("Change is finished")
+                # bchange_procces = False
+    return task_value,status_value,name_value,comment_value
 
 
 
@@ -114,10 +129,14 @@ def update_file(file_name: str) -> None:
     file_dict =  dict_to_list(file_name)
     report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
     
+    found_flag = False
     for sorted_name in file_dict:
         if sorted_name["Report Name"] == report_name:
             print(sorted_name)
-        else:
+            found_flag = True
+            break
+            
+    if not found_flag:
             return print("Not found")
 
     updated_lines = []
@@ -128,7 +147,7 @@ def update_file(file_name: str) -> None:
             task_value,status_value,name_value,comment_value = update_file_input()
             if task_value is not None:
                 line["Task priority"] = task_value
-            if report_name is not None:
+            if name_value is not None:
                 line["Report Name"] = report_name
             if status_value is not None:
                 line["Status"] = status_value
@@ -200,9 +219,11 @@ def action_pre_start(user_choose:int):
     match user_choose:
         case 1:
             report_name = input("Please enter ->Report Name<-:\n").strip().lower()
-            task_priority, status = add_to_file_input()
+            task_priority = add_to_file_input_taskp()
+            status = add_to_file_input_status()
             comment = add_to_file_input_comm()
-            task_priority, status = add_to_file_validation(task_priority,status)
+            task_priority = add_to_file_validation_taskp(task_priority)
+            status = add_to_file_validation_status(status)
             line = add_to_file_create_str(task_priority, report_name, status, comment)
             add_to_file("protocol.txt", line)
         case 2:
