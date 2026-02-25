@@ -83,27 +83,35 @@ def read_file(file_name: str) -> str:
 
 
 # 3)U
-def update_file_input(file_name:str, user_choose):
 
-# if / match
-    report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
-    name_value = input("Enter new value:\n").strip()
-    
-    task_priority = input("Please enter ->Task Priority<- for update:\n").strip().lower()
-    task_value = input("Enter new value:\n").strip()
+def update_file_input():
+    task_value = None
+    status_value = None
+    name_value = None
+    comment_value = None
+    bchange_procces = True
 
-    status = input("Please enter ->Status<- for update:\n").strip().lower()
-    status_value = input("Enter new value:\n").strip()
-
-    comment = input("Please enter ->Status<- for update:\n").strip().lower()
-    comment_value = input("Enter new value:\n").strip()
-
+    while bchange_procces:
+        user_choose = int(input("What are you want update/change? \n 1]Task Priority \n2]Status \n3]Report Name \n4]Comment \n\t5]Change several options  \n\n\t0]Finish"))
+        match user_choose:
+            case 1:
+                task_value = input("Enter new value:\n").strip()
+            case 2:
+                status_value = input("Enter new value:\n").strip()
+            case 3:
+                name_value = input("Enter new value:\n").strip()
+            case 4:
+                comment_value = input("Enter new value:\n").strip()
+            case _:
+                print("Change is finished")
+                bchange_procces = False
+        return task_value,status_value,name_value,comment_value
 
 
 
 def update_file(file_name: str) -> None:
-    file_dict = file_dict_interface(file_name)    
-     
+    file_dict_interface(file_name)    
+    file_dict =  dict_to_list(file_name)
     report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
     
     for sorted_name in file_dict:
@@ -111,16 +119,21 @@ def update_file(file_name: str) -> None:
             print(sorted_name)
         else:
             return print("Not found")
-    user_choose = input("What you want change?")
-    
-# +2 def
 
     updated_lines = []
     found = False
 
     for line in file_dict:
         if line["Report Name"].lower() == report_name:
-            line["Report Name"] = new_value
+            task_value,status_value,name_value,comment_value = update_file_input()
+            if task_value is not None:
+                line["Task priority"] = task_value
+            if report_name is not None:
+                line["Report Name"] = report_name
+            if status_value is not None:
+                line["Status"] = status_value
+            if comment_value is not None:
+                line["Comment"] = comment_value
             found = True
         
             # updated_lines.append(line)
@@ -138,7 +151,6 @@ def update_file(file_name: str) -> None:
         print("Updated successfully")
     else:
         print("Report not found")
-
 
 
 # 4)D
@@ -180,6 +192,7 @@ def file_dict_interface(file_name):
     file_dict = dict_to_list(file_name)
     for x in file_dict:
         print(x,"\n")
+    
 
 
 
@@ -210,7 +223,7 @@ while menu_process:
     # result = dict_to_list("protocol.txt")
     # print(result)
 
-    file_dict_interface("protocol.txt")
+    # file_dict_interface("protocol.txt")
 
     # res_dict = dict_to_list("protocol.txt")
     # print(res_dict)
