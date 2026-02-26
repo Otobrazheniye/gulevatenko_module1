@@ -98,9 +98,7 @@ def update_file_input():
     status_value = None
     name_value = None
     comment_value = None
-    bchange_procces = True
 
-    # while bchange_procces:
     while True:
         user_choose = int(input("What are you want update/change? \n 1]Task Priority \n2]Status \n 3]Report Name \n4]Comment \n\t0]Finish"))
         match user_choose:
@@ -122,28 +120,25 @@ def update_file_input():
                 # bchange_procces = False
     return task_value,status_value,name_value,comment_value
 
-
-
-def update_file(file_name: str) -> None:
-    file_dict_interface(file_name)    
-    file_dict =  dict_to_list(file_name)
+def update_show_search_result(file_dict):
     report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
-    
     found_flag = False
     for sorted_name in file_dict:
-        if sorted_name["Report Name"] == report_name:
+        if sorted_name.get("Report Name","").lower() == report_name:
             print(sorted_name)
             found_flag = True
-            break
+            return report_name
             
-    if not found_flag:
-            return print("Not found")
+        if not found_flag:  
+            print("Not found")       
+    raise StopIteration
 
+def update_change_search_result(report_name,file_dict):
     updated_lines = []
     found = False
 
     for line in file_dict:
-        if line["Report Name"].lower() == report_name:
+        if line.get("Report Name").lower() == report_name:
             task_value,status_value,name_value,comment_value = update_file_input()
             if task_value is not None:
                 line["Task priority"] = task_value
@@ -163,13 +158,23 @@ def update_file(file_name: str) -> None:
             line["Comment"]
         )
         updated_lines.append(line_str)
-
+    return updated_lines,found
+    
+def update_show_change_result(file_name,updated_lines,found):
     if found:
         with open(file_name, "w", encoding="utf-8") as f:
             f.writelines(updated_lines)
         print("Updated successfully")
     else:
         print("Report not found")
+
+def update_file(file_name: str) -> None:
+    file_dict_interface(file_name)    
+    file_dict =  dict_to_list(file_name)
+    report_name = update_show_search_result(file_dict)
+    update_lines,found = update_change_search_result(report_name,file_dict)
+    update_show_change_result(file_name,update_lines,found)
+
 
 
 # 4)D
