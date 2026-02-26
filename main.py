@@ -148,7 +148,7 @@ def update_file(file_name: str) -> None:
             if task_value is not None:
                 line["Task priority"] = task_value
             if name_value is not None:
-                line["Report Name"] = report_name
+                line["Report Name"] = name_value
             if status_value is not None:
                 line["Status"] = status_value
             if comment_value is not None:
