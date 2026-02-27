@@ -8,11 +8,11 @@
 # Если пользователь удалил несколько задач и у вас остались задачи 1, 3, 5, то следующая будет с номером 6.
 
 #! CRUD 
-# Task priority Name status comment ID(More->Details ) 
+#! Task priority Name status comment ID(More->Details ) 
 #! Data = text.txt in folder
 #! Реализуйте пользовательский интерфейс (например, с помощью цикла while и ввода пользователя) для взаимодействия с системой задач.
 # Добавьте возможность сортировки задач по приоритету или статусу при просмотре.
-# Реализуйте возможность поиска задач по ключевым словам в названии или описании.
+# !Реализуйте возможность поиска задач по ключевым словам в названии или описании.
 
 
 
@@ -23,6 +23,17 @@ def create_file(file_name: str) -> None:
         f.write("success add\n")
 
 # 1)A
+
+def add_file():
+    report_name = input("Please enter ->Report Name<-:\n").strip().lower()
+    task_priority = add_to_file_input_taskp()
+    status = add_to_file_input_status()
+    comment = add_to_file_input_comm()
+    task_priority = add_to_file_validation_taskp(task_priority)
+    status = add_to_file_validation_status(status)
+    line = add_to_file_create_str(task_priority, report_name, status, comment)
+    add_to_file("protocol.txt", line)
+
 def add_to_file_input_taskp():
     task_priority = int(input("Please choose correct task priority: \n 1] High \n 2] Medium \n 3] Low \n\t").strip())
     return task_priority
@@ -219,18 +230,11 @@ def file_dict_interface(file_name):
     
 
 
-
+# switch logistic
 def action_pre_start(user_choose:int):
     match user_choose:
         case 1:
-            report_name = input("Please enter ->Report Name<-:\n").strip().lower()
-            task_priority = add_to_file_input_taskp()
-            status = add_to_file_input_status()
-            comment = add_to_file_input_comm()
-            task_priority = add_to_file_validation_taskp(task_priority)
-            status = add_to_file_validation_status(status)
-            line = add_to_file_create_str(task_priority, report_name, status, comment)
-            add_to_file("protocol.txt", line)
+            add_file()
         case 2:
             read_file("protocol.txt")
             
