@@ -229,6 +229,64 @@ def file_dict_interface(file_name):
         print(x,"\n")
     
 
+# sort report by task/ststus
+# def sort_file_high_write(lines,line):
+
+
+# def sort_file_taskp_queue():
+#     user_choose = int(input("Please choose priority: \n 1] High \n 2] Medium \n 3] Low \n\t").strip())
+#         match user_choose:
+#             case 1:
+            
+
+def sort_file_taskp(file_name):
+    with open(file_name, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+        dict_high = {}
+        dict_medium = {}
+        dict_low = {}
+
+        # for line in lines:
+        #     if line.get("Task priority").lower == "High":
+        #         if ":" in line:
+        #             key,value = line.split(":",1)
+        # for line in lines:
+        #     if line.get("Task priority").lower == "Medium":
+        #         if ":" in line
+        # for line in lines:
+        #     if line.get("Task priority").lower == "Low":
+        #         print(line,"\n")
+
+
+       
+    return lines
+
+def sort_file(file_name: str) -> str:
+    read_file_clasic(file_name)
+    return
+
+
+
+def action_presort_head():
+    read_file("protocol.txt")
+    user_choose = int(input("Do you want sort? \n1] No \t  Sort by: 2] Task priority \n3] Status \t 4] Exit \n"))
+    return user_choose
+
+def action_presort_body(user_choose):
+    match user_choose:
+        case 1:
+            user_choose_action = int(input())
+        case 2:
+            sort_file_taskp("protocol.txt")
+
+
+def action_presort():
+    user_choose = action_presort_head() 
+    action_presort_body(user_choose)
+        
+
+
 
 # switch logistic
 def action_pre_start(user_choose:int):
