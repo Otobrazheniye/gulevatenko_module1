@@ -230,33 +230,104 @@ def file_dict_interface(file_name):
     
 
 # sort report by task/ststus
-# def sort_file_high_write(lines,line):
+def sort_file_read(total_list):
+        for line in total_list:
+            print(line,"\n")
+    
 
+def sort_file_write_taskp_construct(user_choose_queue2,dict_high,dict_medium,dict_low):
+        total_list =[]
 
-# def sort_file_taskp_queue():
-#     user_choose = int(input("Please choose priority: \n 1] High \n 2] Medium \n 3] Low \n\t").strip())
-#         match user_choose:
-#             case 1:
-            
+        if user_choose_queue2 == 1:
+            total_list = total_list.append(dict_high,dict_medium,dict_low)
+            return total_list
+        elif user_choose_queue2 == 2:
+            total_list = total_list.append(dict_medium,dict_high,dict_low)
+            return total_list
+        elif user_choose_queue2 == 3:
+            total_list = total_list.append(dict_low,dict_medium,dict_high)
+            return total_list
+        else:
+            print("Tech Error")
+        return total_list
 
-def sort_file_taskp(file_name):
-    with open(file_name, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+def sort_file_write_status_construct(user_choose_queue2, dict_new, dict_in_progress, dict_finished):
+        total_list =[]
 
+        if user_choose_queue2 == 1:
+            total_list = total_list.append(dict_new,dict_in_progress,dict_finished)
+            return total_list
+        elif user_choose_queue2 == 2:
+            total_list = total_list.append(dict_in_progress, dict_new, dict_finished)
+            return total_list
+        elif user_choose_queue2 == 3:
+            total_list = total_list.append(dict_finished, dict_in_progress, dict_new)
+            return total_list
+        else:
+            print("Tech Error")
+        return total_list
+
+def sort_file_write_taskp(lines):
         dict_high = {}
         dict_medium = {}
         dict_low = {}
 
-        # for line in lines:
-        #     if line.get("Task priority").lower == "High":
-        #         if ":" in line:
-        #             key,value = line.split(":",1)
-        # for line in lines:
-        #     if line.get("Task priority").lower == "Medium":
-        #         if ":" in line
-        # for line in lines:
-        #     if line.get("Task priority").lower == "Low":
-        #         print(line,"\n")
+        for line in lines:
+            if line.get("Task priority").lower == "high":
+                if ":" in line:
+                    key,value = line.split(":",1)
+                    dict_high[key.strip()] = value.strip()
+            elif line.get("Task priority").lower == "medium":
+                if ":" in line:
+                    key,value = line.split(":",1)
+                    dict_medium[key.strip()] = value.strip()             
+            elif line.get("Task priority").lower == "low":
+                if ":" in line:
+                    key,value = line.split(":",1)
+                    dict_low[key.strip()] = value.strip()   
+            else:
+                print("Line is empty")
+        return dict_high,dict_medium,dict_low
+                
+
+def sort_file_write_status(lines):
+        dict_new = {}
+        dict_in_progress = {}
+        dict_finished = {}
+
+        for line in lines:
+            if line.get("Status").lower == "new":
+                if ":" in line:
+                    key,value = line.split(":",1)
+                    dict_new[key.strip()] = value.strip()
+            elif line.get("Status").lower == "in progress":
+                if ":" in line:
+                    key,value = line.split(":",1)
+                    dict_in_progress[key.strip()] = value.strip()             
+            elif line.get("Status").lower == "finished":
+                if ":" in line:
+                    key,value = line.split(":",1)
+                    dict_finished[key.strip()] = value.strip()   
+            else:
+                print("Line is empty")
+        return dict_new, dict_in_progress, dict_finished 
+
+def sort_file_taskp(file_name,user_choose_queue):
+    with open(file_name, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+        if user_choose_queue == 2:
+            dict_high,dict_medium,dict_low = sort_file_write_taskp(lines)
+            # user_choose_queue2 = 
+            total_dict = sort_file_write_taskp_construct(user_choose_queue2,dict_high,dict_medium,dict_low)
+        elif user_choose_queue == 3:
+            dict_new, dict_in_progress, dict_finished  = sort_file_write_status(lines)
+            # user_choose_queue2 =
+            total_dict = sort_file_write_status_construct(user_choose_queue2, dict_new, dict_in_progress, dict_finished)
+        sort_file_read(total_dict)
+
+
+
 
 
        
@@ -273,17 +344,17 @@ def action_presort_head():
     user_choose = int(input("Do you want sort? \n1] No \t  Sort by: 2] Task priority \n3] Status \t 4] Exit \n"))
     return user_choose
 
-def action_presort_body(user_choose):
-    match user_choose:
+def action_presort_body(user_choose_queue):
+    match user_choose_queue:
         case 1:
             user_choose_action = int(input())
-        case 2:
-            sort_file_taskp("protocol.txt")
+        case 2,3:
+            sort_file_taskp("protocol.txt",user_choose_queue)
 
 
 def action_presort():
-    user_choose = action_presort_head() 
-    action_presort_body(user_choose)
+    user_choose_queue = action_presort_head() 
+    action_presort_body(user_choose_queue)
         
 
 
