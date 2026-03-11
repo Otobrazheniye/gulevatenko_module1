@@ -1,22 +1,3 @@
-# Из чего состоит?
-# Задача должна состоять из названия, описания, приоритета, статуса и уникального идентификатора.
-# Приоритет может иметь три варианта: низкий, средний, высокий.
-# Статус может иметь три варианта: новая, в процессе, завершена.
-# Уникальный идентификатор (id) — это просто число, которое всегда на 1 больше, чем самое большое из уже существующих. Например, 
-# если у вас задач нет, то для первой этот параметр будет равен 1. Если у вас уже есть задачи с номерами 1, 2, 3, то новая будет 
-# создана с номером 4. 
-# Если пользователь удалил несколько задач и у вас остались задачи 1, 3, 5, то следующая будет с номером 6.
-
-#! CRUD 
-#! Task priority Name status comment ID(More->Details ) 
-#! Data = text.txt in folder
-#! Реализуйте пользовательский интерфейс (например, с помощью цикла while и ввода пользователя) для взаимодействия с системой задач.
-# Добавьте возможность сортировки задач по приоритету или статусу при просмотре.
-# !Реализуйте возможность поиска задач по ключевым словам в названии или описании.
-
-
-
-
 # 0)C
 def create_file(file_name: str) -> None:
     with open(file_name, "w", encoding="utf-8") as f:
@@ -25,14 +6,16 @@ def create_file(file_name: str) -> None:
 # 1)A
 
 def add_file():
-    report_name = input("Please enter ->Report Name<-:\n").strip().lower()
-    task_priority = add_to_file_input_taskp()
-    status = add_to_file_input_status()
+    report_name = input("Enter title:\n").strip()
     comment = add_to_file_input_comm()
-    task_priority = add_to_file_validation_taskp(task_priority)
-    status = add_to_file_validation_status(status)
-    line = add_to_file_create_str(task_priority, report_name, status, comment)
+
+    task_priority = add_to_file_validation_taskp(add_to_file_input_taskp())
+    status = add_to_file_validation_status(add_to_file_input_status())
+
+    task_id = get_next_id("protocol.txt")
+    line = add_to_file_create_str(task_id, task_priority, report_name, status, comment)
     add_to_file("protocol.txt", line)
+    
 
 def add_to_file_input_taskp():
     task_priority = int(input("Please choose correct task priority: \n 1] High \n 2] Medium \n 3] Low \n\t").strip())
@@ -73,15 +56,14 @@ def add_to_file_validation_status(status:int):
 
 
 
-def add_to_file_create_str(task_priority:str, report_name, status:str, comment):
-    report_line = (
-        f"Task priority: {task_priority}\t\t"
-        f"Status: {status}\t\t"
-        f"Report Name: {report_name.strip()}\t\t"
-        f"Comment: {comment}\n"
-        "\n"
+def add_to_file_create_str(task_id: int, task_priority: str, report_name: str, status: str, comment: str) -> str:
+    return (
+        f"ID: {task_id}\t"
+        f"Task priority: {task_priority}\t"
+        f"Status: {status}\t"
+        f"Report Name: {report_name.strip()}\t"
+        f"Comment: {comment.strip()}\n"
     )
-    return report_line
     
 def add_to_file(file_name, report_line):
     with open(file_name, "a", encoding="utf-8") as f:
@@ -134,23 +116,21 @@ def update_file_input():
 
 def update_show_search_result(file_dict):
     report_name = input("Please enter ->Report Name<- for update:\n").strip().lower()
-    found_flag = False
-    for sorted_name in file_dict:
-        if sorted_name.get("Report Name","").lower() == report_name:
-            print(sorted_name)
-            found_flag = True
+
+    for item in file_dict:
+        if item.get("Report Name", "").lower() == report_name:
+            print(item)
             return report_name
-            
-        if not found_flag:  
-            print("Not found")       
-    raise StopIteration
+
+    print("Not found")
+    return None
 
 def update_change_search_result(report_name,file_dict):
     updated_lines = []
     found = False
 
     for line in file_dict:
-        if line.get("Report Name").lower() == report_name:
+        if line.get("Report Name", "").lower() == report_name:
             task_value,status_value,name_value,comment_value = update_file_input()
             if task_value is not None:
                 line["Task priority"] = task_value
@@ -164,6 +144,7 @@ def update_change_search_result(report_name,file_dict):
         
             # updated_lines.append(line)
         line_str = add_to_file_create_str(
+            int(line["ID"]),
             line["Task priority"],
             line["Report Name"],
             line["Status"],
@@ -181,28 +162,104 @@ def update_show_change_result(file_name,updated_lines,found):
         print("Report not found")
 
 def update_file(file_name: str) -> None:
-    file_dict_interface(file_name)    
-    file_dict =  dict_to_list(file_name)
-    report_name = update_show_search_result(file_dict)
-    update_lines,found = update_change_search_result(report_name,file_dict)
-    update_show_change_result(file_name,update_lines,found)
+    tasks = dict_to_list(file_name)
 
+    try:
+        task_id = int(input("Enter task ID to update:\n").strip())
+    except ValueError:
+        print("Wrong ID")
+        return
+
+    task = find_task_by_id(tasks, task_id)
+    if task is None:
+        print("Task not found")
+        return
+
+    field = int(input("Update:\n1] Title\n2] Description\n3] Priority\n4] Status\n0] Exit\n"))
+    if field == 0:
+        return
+
+    if field == 1:
+        task["Report Name"] = input("New title:\n").strip()
+    elif field == 2:
+        task["Comment"] = input("New description:\n").strip()
+    elif field == 3:
+        task["Task priority"] = add_to_file_validation_taskp(add_to_file_input_taskp())
+    elif field == 4:
+        task["Status"] = add_to_file_validation_status(add_to_file_input_status())
+    else:
+        print("Wrong choice")
+        return
+
+    with open(file_name, "w", encoding="utf-8") as f:
+        for t in tasks:
+            f.write(add_to_file_create_str(
+                int(t.get("ID", 0)),
+                t.get("Task priority", ""),
+                t.get("Report Name", ""),
+                t.get("Status", ""),
+                t.get("Comment", "")
+            ))
+
+    print("Updated successfully")
+
+    
+
+def find_task_by_id(tasks: list[dict], task_id: int) -> dict | None:
+    for t in tasks:
+        if int(t.get("ID", -1)) == task_id:
+            return t
+    return None
 
 
 # 4)D
 def delete_file(file_name: str) -> None:
-    with open(file_name, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    print("".join(lines))
-    
-    user_choose = input("Enter  what you want delete:")
+    tasks = dict_to_list(file_name)
+    try:
+        task_id = int(input("Enter task ID to delete:\n").strip())
+    except ValueError:
+        print("Wrong ID")
+        return
+
+    new_tasks = [t for t in tasks if int(t.get("ID", -1)) != task_id]
+    if len(new_tasks) == len(tasks):
+        print("Task not found")
+        return
+
     with open(file_name, "w", encoding="utf-8") as f:
-        for line in lines:
-            if line.strip() != user_choose:
-                f.write(line)
-    # print("".join(line))
+        for t in new_tasks:
+            f.write(add_to_file_create_str(
+                int(t.get("ID", 0)),
+                t.get("Task priority", ""),
+                t.get("Report Name", ""),
+                t.get("Status", ""),
+                t.get("Comment", "")
+            ))
+    print("Deleted successfully")
 
 
+# ID
+def get_next_id(file_name: str) -> int:
+    tasks = dict_to_list(file_name)
+    if not tasks:
+        return 1
+    ids = [int(t.get("ID", 0)) for t in tasks if t.get("ID")]
+    return (max(ids) + 1) if ids else 1
+
+# Search
+def search_tasks(file_name: str) -> None:
+    q = input("Enter search text:\n").strip().lower()
+    tasks = dict_to_list(file_name)
+
+    result = [
+        t for t in tasks
+        if q in t.get("Report Name", "").lower() or q in t.get("Comment", "").lower()
+    ]
+
+    if not result:
+        print("Nothing found")
+    else:
+        print_tasks(result)
 
 # File dict transform
 
@@ -218,11 +275,14 @@ def file_to_dict(line):
 
 def dict_to_list(file_name):
     result = []
-    with open(file_name, "r", encoding="utf-8") as f:
-        for line in f:
-            if line.strip():
-                result.append(file_to_dict(line))
-    return result 
+    try:
+        with open(file_name, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    result.append(file_to_dict(line))
+    except FileNotFoundError:
+        pass
+    return result
 
 def file_dict_interface(file_name):
     file_dict = dict_to_list(file_name)
@@ -257,10 +317,13 @@ def sort_file(file_name: str, mode: int) -> None:
     print_tasks(tasks)
 
 def action_presort():
-    user_choose = int(input("Sort by:\n1] No\n2] Task priority\n3] Status\n0] Exit\n"))
-
-    if user_choose in (2, 3):
+    user_choose = int(input("View:\n1] Original\n2] Sort priority\n3] Sort status\n4] Search\n0] Exit\n"))
+    if user_choose == 1:
+        print_tasks(dict_to_list("protocol.txt"))
+    elif user_choose in (2, 3):
         sort_file("protocol.txt", user_choose)
+    elif user_choose == 4:
+        search_tasks("protocol.txt")
 
 # switch logistic
 def action_pre_start(user_choose:int):
@@ -282,16 +345,8 @@ def action_pre_start(user_choose:int):
 # main
 menu_process = True
 while menu_process:
-    # result = dict_to_list("protocol.txt")
-    # print(result)
-
-    # file_dict_interface("protocol.txt")
-
-    # res_dict = dict_to_list("protocol.txt")
-    # print(res_dict)
-
     
-    user_choose = int(input("Please choose action: \n1] Create \t 2] Read \n3]Update \t 4] Delete \n"))
+    user_choose = int(input("Please choose action: \n1] Create \t 2] Read \n3] Update \t 4] Delete \n"))
     action_pre_start(user_choose)
 
 
